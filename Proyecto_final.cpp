@@ -5,14 +5,14 @@ using namespace std;
 struct tPolinomio
 { 
 	int grado;                /* Grado del polinomio */
-    vector<double> coef;      /* Coeficientes  */
+    vector<double> coef;      /* Coeficientes */
 };
 
 tPolinomio str_to_tpol(string);
 
 int main () {
     vector<string> str_polinomios;
-    vector<tPolinomio> tpol_polinomios{};
+    vector<tPolinomio> tpol_polinomios;
     int n_polinomios;
     string temp;
 
@@ -38,18 +38,19 @@ int main () {
             }   
         }
     }
-    ///////////////////////////////////////////////////////////////////////////// Hasta aqui funciona perfectamente, lo de mas adelante se compila, pero no funciona
+
+    ///////////////////////////////////////////////////////////////////////////// Hasta aqui funciona perfectamente
 
     for (string polinomio : str_polinomios)
     {
         tpol_polinomios.push_back(str_to_tpol(polinomio));
     }
 
-    for(auto polinomio : tpol_polinomios)
+    for(tPolinomio polinomio : tpol_polinomios)
     {
-        cout<<"------------------"<<endl;               //Temporal, sirve para comprobar si str_to_tpol() funciona correctamente
+        cout<<"------------------"<<endl;
         cout<<polinomio.grado<<endl;
-        for (auto coeficiente: polinomio.coef)
+        for (float coeficiente: polinomio.coef)
             cout<<coeficiente<<endl;
         cout<<"------------------"<<endl;
     }
@@ -58,30 +59,50 @@ int main () {
 }
 
 tPolinomio str_to_tpol(string str_polinomio){   //Si se esta recibiendo str_polinomio correctamente
-    tPolinomio tpol_polinomio;
-    string temp_coef{}, temp_grado{"-1"};
+    tPolinomio tpol_polinomio{};
+    string temp_coef{}, temp_grado{"0"};
     bool coef = true;
     
     for (int i = 0 ; i < str_polinomio.length() ; i++) // Correcto
     {
-        if (str_polinomio.at(i) == '+' or str_polinomio.at(i) == '-' or str_polinomio.length()-1 == i or 0 == i)
+        if (i==0)
+            temp_coef.push_back(str_polinomio.at(i));
+        else if (str_polinomio.length()-1 == i)
         {
-            if (stoi(temp_grado) > tpol_polinomio.grado and temp_grado != "-1")
+            if (coef)
+            {
+                temp_coef.push_back(str_polinomio.at(i));
+                temp_grado = "0";
+            }
+            else
+                temp_grado.push_back(str_polinomio.at(i));
+            if (stoi(temp_grado) >= tpol_polinomio.grado)
             {
                 tpol_polinomio.coef.resize(stoi(temp_grado)+1);
                 tpol_polinomio.grado = stoi(temp_grado);
             }
-            if (temp_grado != "-1")
+            tpol_polinomio.coef.at(stoi(temp_grado)) = stof(temp_coef);
+        }
+        else if (str_polinomio.at(i) == '+' or str_polinomio.at(i) == '-')
+        {
+            if (coef)
             {
-                tpol_polinomio.coef.at(stoi(temp_grado)) = stoi(temp_coef);
+                temp_coef.push_back(str_polinomio.at(i));
+                temp_grado = "0";
             }
+            else
+                temp_grado.push_back(str_polinomio.at(i));
 
+            if (stoi(temp_grado) >= tpol_polinomio.grado)     
+            {
+                tpol_polinomio.coef.resize(stoi(temp_grado)+1);
+                tpol_polinomio.grado = stoi(temp_grado);
+            }
+            tpol_polinomio.coef.at(stoi(temp_grado)) = stof(temp_coef);
             coef = true;
             temp_coef = "";
             temp_grado = "";
-            temp_coef.push_back(str_polinomio.at(i));
         }
-
         else if ((str_polinomio.at(i) >= 48 and str_polinomio.at(i) <= 57 or str_polinomio.at(i) == '.') and coef == true)
             temp_coef.push_back(str_polinomio.at(i));
         else if (str_polinomio.at(i) == '*')
