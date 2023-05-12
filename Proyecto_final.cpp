@@ -11,6 +11,7 @@ struct tPolinomio
 ///////////////////////////////         Prototipos de funciones
 tPolinomio str_to_tpol(const string&);
 void leer_str_pol(vector<string>&, int);
+bool comprobacion(string);
 //////////////////////////////
 
 int main () {
@@ -18,12 +19,12 @@ int main () {
     vector<tPolinomio> tpol_polinomios;
     int n_polinomios;
     string temp;
-
+    
     cout<<"Introduzca la cantidad de polinomios a sumar: ";
     cin>>n_polinomios;
     cin.ignore();
     leer_str_pol(str_polinomios, n_polinomios);                         //Se debe usar cin.ignore() antes de leer_str_pol() si se utiliza cin
-    
+
     for (int k = 0 ; k < n_polinomios; k++)                             //No se si convertir o no este loop en funcion. Se encarga de retirar los espacios de los strings 
                                                                         //Modifica los strings dentro del vector para retirarle los espacios
     {
@@ -35,11 +36,6 @@ int main () {
             }   
         }
     }
-
-
-
-                                ///Aqui hace falta el comprobante de la validez de los strings ingresados, en el psedocodigo hay unos buenos criterios de como programarlo
-
 
     for (const string &polinomio : str_polinomios)                      // Este es el loop que transforma strings a tpolinomio mediante la funcion str_to_tpol() (revisarla)
     {
@@ -127,6 +123,33 @@ void leer_str_pol(vector<string>& str_polinomios, int n_polinomios){
     for (int i{0}; i<n_polinomios; i++){
         cout<<"Polinomio " << i+1 <<": ";
         getline(cin,temp);
-        str_polinomios.push_back(temp);
+        while (true)
+        {
+            if(comprobacion(temp))
+            {                                                    //Comprobacion
+                str_polinomios.push_back(temp);
+                break;
+            }
+            else
+                cout<<"Error, ingrese nuevamente el polinomio: ";
+                getline(cin,temp);
+        }
     }
+}
+bool comprobacion(string temp){
+    
+    for (int i = 0 ; i <= temp.size()-1 ; i++)
+    {
+        if (temp.empty())
+        return false;
+        if (!(temp.at(i) <= 57 and temp.at(i) >= 48 or temp.at(i) == '*' or temp.at(i) == '-' or temp.at(i) == '+' or temp.at(i) == '.' or temp.at(i) == 'x' or temp.at(i) == ' '))
+            return false;
+        else if ( i<=temp.size()-2 and (temp.at(i) == temp.at(i+1)) and !(temp.at(i) <= 57 and temp.at(i) >= 48))               //IMPORTANTE QUE SE MANTENGA EL i<=temp.size()-2 PRIMERO
+        //ME ACABO DE DAR CUENTA DE QUE ESTA COMPROBACION ES INSUFICIENTE, PUESTO QUE PUEDEN HABER REPETIDOS EN DIFEERENTES PARTES DEL CODIGO NO NECESARIAMENTE ADYECENTES, SE DEBE MEJORAR
+            return false;
+            //Siguiente comprobacion: Si "x", "*", ".", el siguiente caracter no puede ser un espacio,
+            //Si "char numero", y el siguiente caracter es un espacio, se debe recorrer mediante un bucle un temp.at() todos los espacios hasta encontrar un "+", caso contrario se retorna falso
+            //Si "+" o "-", y el siguiente caracater es un espacio, se se debe recorrer mediante un bucle un temp.at() todos los espacios  hasta encontrar un numero, caso contrario se retorna falso
+    }
+    return true;
 }
