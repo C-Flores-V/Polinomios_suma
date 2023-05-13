@@ -72,7 +72,15 @@ tPolinomio str_to_tpol(const string &str_polinomio){                    //Anotac
     for (int i = 0 ; i < str_polinomio.length() ; i++) // Correcto
     {
         if (i==0)
+        {
             temp_coef.push_back(str_polinomio.at(i));
+            if (str_polinomio.length()-1 == i)
+            {
+                tpol_polinomio.coef.resize(1);
+                tpol_polinomio.coef.at(stoi(temp_grado)) = stof(temp_coef);
+            }
+                
+        }
         else if (str_polinomio.length()-1 == i)
         {
             if (coef)
@@ -99,7 +107,7 @@ tPolinomio str_to_tpol(const string &str_polinomio){                    //Anotac
             else
                 temp_grado.push_back(str_polinomio.at(i));
 
-            if (stoi(temp_grado) >= tpol_polinomio.grado)     
+            if (stoi(temp_grado) >= tpol_polinomio.grado)
             {
                 tpol_polinomio.coef.resize(stoi(temp_grado)+1);
                 tpol_polinomio.grado = stoi(temp_grado);
@@ -137,16 +145,105 @@ void leer_str_pol(vector<string>& str_polinomios, int n_polinomios){
     }
 }
 bool comprobacion(string temp){
-    
+    string lugar_monomio = {"entero"};                      // Variable que guarda la ubicacion en la que se encuentra i dentro de la string, puede ser entero, decimal o grado
+    bool primer_espacio = true;
+    char p_caracter_entre_espacios{};
+
+    if (temp.empty())
+        return false;
     for (int i = 0 ; i <= temp.size()-1 ; i++)
     {
-        if (temp.empty())
+        if (!(temp.at(i) <= 57 and temp.at(i) >= 48 or temp.at(i) == '*' or temp.at(i) == '-' or temp.at(i) == '+' or temp.at(i) == '.' or temp.at(i) == 'x' or temp.at(i) == ' '))                     //Se comprueba si los caracteres ingresados estan dentro del rango valido
+            return false;
+    }
+    
+    if (!(temp[0]=='-' or temp[0]=='+' or temp[0]==' ' or (temp.at(0) <= 57 and temp.at(0) >= 48)))     //Comprueba si la string comienza con un caracter valido
+    {
         return false;
-        if (!(temp.at(i) <= 57 and temp.at(i) >= 48 or temp.at(i) == '*' or temp.at(i) == '-' or temp.at(i) == '+' or temp.at(i) == '.' or temp.at(i) == 'x' or temp.at(i) == ' '))
-            return false;
-        else if ( i<=temp.size()-2 and (temp.at(i) == temp.at(i+1)) and !(temp.at(i) <= 57 and temp.at(i) >= 48))               //IMPORTANTE QUE SE MANTENGA EL i<=temp.size()-2 PRIMERO
-        //ME ACABO DE DAR CUENTA DE QUE ESTA COMPROBACION ES INSUFICIENTE, PUESTO QUE PUEDEN HABER REPETIDOS EN DIFEERENTES PARTES DEL CODIGO NO NECESARIAMENTE ADYECENTES, SE DEBE MEJORAR
-            return false;
+    }
+    
+    for (int i = 1 ; i <= temp.size()-1 ; i++)                      //Revision letra por letra de los strings a partuir del indice 1
+    {                                                               //La verificacion esta planificada por caracteres (Que pasa si temp.at(i) == 'x' por ejemplo)                
+        if (temp[i] == ' ')
+        {
+            if(i == 1)                                   //Aqui se revisan los casos que existen cuando el caracter es un espacio y esta en la segunda posicion
+            {
+                while (i <= temp.size()-1 and temp.at(i) == ' ')
+                    i++;
+                if (i == temp.size())
+                    return false;
+                if (!(temp.at(i) <= 57 and temp.at(i) >= 48))
+                    return false;
+            }
+            else
+            {
+                if (primer_espacio == true)
+                    p_caracter_entre_espacios = temp.at(i-1);
+                    primer_espacio = false;
+                if (i <= temp.size()-2 and !(temp.at(i+1) == '+' or temp.at(i+1) == '-' or (temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' '))
+                    return false;
+                else if (!(temp.at(i-1) == '+' or temp.at(i-1) == '-' or (temp.at(i-1) <= 57 and temp.at(i-1) >= 48) or temp.at(i-1) == ' '))
+                    return false;
+                else
+                {
+                    while (i <= temp.size()-2 and (i <= temp.size()-1 and temp.at(i+1) == ' '))
+                        i++;
+                    if (i <= temp.size()-2 and ((p_caracter_entre_espacios == '+' and temp.at(i+1) == '+') 
+                        or (p_caracter_entre_espacios == '-' and temp.at(i+1) == '-') 
+                        or (p_caracter_entre_espacios == '+' and temp.at(i+1) == '-') 
+                        or (p_caracter_entre_espacios == '-' and temp.at(i+1) == '+') 
+                        or ((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) and (p_caracter_entre_espacios <= 57 and p_caracter_entre_espacios >= 48))))
+                        return false;
+                }
+                primer_espacio = true;
+            }    
+        }
+        else if (temp.at(i) <= 57 and temp.at(i) >= 48)
+        {
+            if ((i < (temp.size()-1)) and lugar_monomio == "entero" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == '.' or temp.at(i+1) == '*' or temp.at(i+1) == ' '))
+                return false;
+            else if ((i < (temp.size()-1)) and lugar_monomio == "decimal" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == '*' or temp.at(i+1) == ' '))
+                return false;
+            else if ((i < (temp.size()-1)) and lugar_monomio == "grado" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' ' or temp.at(i+1) == '+' or temp.at(i+1) == '-' or temp.at(i+1) == ' '))
+                return false;
+            else
+                continue;
+        }
+        
+        else if (temp.at(i) == '.')
+        {
+            lugar_monomio = "decimal";
+            if (!(temp.at(i+1) <= 57 and temp.at(i+1) >= 48))
+                return false;
+            else
+                continue;
+        }
+        
+        else if (temp.at(i) == '*')
+        {
+            lugar_monomio = "grado";
+            if (temp.at(i+1) != 'x')
+                return false;
+            else
+                continue;
+        }
+        else if (temp.at(i) == 'x')
+        {
+            if (!(temp.at(i+1) <= 57 and temp.at(i+1) >= 48))
+                return false;
+            else
+                continue;
+        }
+        else if (temp.at(i) == '+' or temp.at(i) == '-' )
+        {
+            if (!((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' '))
+                return false;
+            else
+                lugar_monomio = "entero";
+                continue;
+        }
+        
+        
             //Siguiente comprobacion: Si "x", "*", ".", el siguiente caracter no puede ser un espacio,
             //Si "char numero", y el siguiente caracter es un espacio, se debe recorrer mediante un bucle un temp.at() todos los espacios hasta encontrar un "+", caso contrario se retorna falso
             //Si "+" o "-", y el siguiente caracater es un espacio, se se debe recorrer mediante un bucle un temp.at() todos los espacios  hasta encontrar un numero, caso contrario se retorna falso
