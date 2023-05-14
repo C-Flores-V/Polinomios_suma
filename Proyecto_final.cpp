@@ -15,38 +15,54 @@ bool comprobacion(string);
 //////////////////////////////
 
 int main () {
-    vector<string> str_polinomios;                                      //Los strings ingresados por el usuario se guardan en un vector de 
-    vector<tPolinomio> tpol_polinomios;
-    int n_polinomios;
-    string temp;
-    
+    vector<string> str_polinomios;                                      //Los strings ingresados por el usuario se guardan en este vector string
+    vector<tPolinomio> tpol_polinomios;                                 //Los strings procesados por el usuario se guardan en este vector t_pol
+    int n_polinomios;                                                   //Guarda la cantidad de polinomios ingresados por el usuario
+    string temp_n_poliniomios;
+    bool comp = false;
+                                                            
     cout<<"Introduzca la cantidad de polinomios a sumar: ";
-    cin>>n_polinomios;
-    cin.ignore();
+    while (true)
+    {
+        if (comp == true)
+            break;
+        comp = true;
+        getline(cin , temp_n_poliniomios);
+        
+        for (int i = 0; i < temp_n_poliniomios.size() ; i++)
+        {
+            if (!(temp_n_poliniomios.at(i) >=49 and temp_n_poliniomios.at(i) <= 57))
+            {
+                cout<<"Error, ingrese nuevamente el numero de polinomios: ";
+                comp = false;
+                break;
+            }
+        }
+    }                                                                   //Recibe el numero de polinomios
+    n_polinomios = stoi(temp_n_poliniomios);
     leer_str_pol(str_polinomios, n_polinomios);                         //Se debe usar cin.ignore() antes de leer_str_pol() si se utiliza cin
 
-    for (int k = 0 ; k < n_polinomios; k++)                             //No se si convertir o no este loop en funcion. Se encarga de retirar los espacios de los strings 
-                                                                        //Modifica los strings dentro del vector para retirarle los espacios
-    {
-        for (int i{}; i <= str_polinomios.at(k).size() - 1; i++)
+    for (int k = 0 ; k < n_polinomios; k++)                             //Se encarga de retirar los espacios de los strings, modifica los strings dentro del vector para retirarle los espacios
+    {                                                                   //No es indispensable, pero sirve como una medida de seguridad para str_to_pol()
+        for (int i{}; i <= str_polinomios.at(k).size() - 1; i++)        
         {
             if (str_polinomios.at(k).at(i) == ' ')
             {
-                str_polinomios.at(k).erase(str_polinomios.at(k).begin()+i);
+                str_polinomios.at(k).erase(str_polinomios.at(k).begin()+i);     //Parte que elimina los espacios
             }   
         }
     }
 
-    for (const string &polinomio : str_polinomios)                      // Este es el loop que transforma strings a tpolinomio mediante la funcion str_to_tpol() (revisarla)
+    for (const string &polinomio : str_polinomios)                      // Este es el loop que transforma strings a tpolinomio mediante la funcion str_to_tpol()
     {
-        tpol_polinomios.push_back(str_to_tpol(polinomio));
+        tpol_polinomios.push_back(str_to_tpol(polinomio));              //Se hace push dentro del vector tpol_polinomios la funcion
     }
 
 
-    int i = 0;
-    for(tPolinomio polinomio : tpol_polinomios)                          // Esto es temporal, imprime los datos contenidos dentro de el vector tpol_polinomios
+    int i = 0;                                                          //TEMPORAL, imprime los datos contenidos dentro de el vector tpol_polinomios
+    for(tPolinomio polinomio : tpol_polinomios)                          
     {
-        cout<<"------------------"<<endl;
+        cout<<"------------------"<<endl;                                
         cout<<"Grado del polinomio: "<<polinomio.grado<<endl;
         for (float coeficiente: polinomio.coef){
             cout<<"Coeficiente elevado a la "<<i<<": " <<coeficiente<<endl;
@@ -134,7 +150,7 @@ void leer_str_pol(vector<string>& str_polinomios, int n_polinomios){
         while (true)
         {
             if(comprobacion(temp))
-            {                                                    //Comprobacion
+            {                                                    
                 str_polinomios.push_back(temp);
                 break;
             }
@@ -146,7 +162,7 @@ void leer_str_pol(vector<string>& str_polinomios, int n_polinomios){
 }
 bool comprobacion(string temp){
     string lugar_monomio = {"entero"};                      // Variable que guarda la ubicacion en la que se encuentra i dentro de la string, puede ser entero, decimal o grado
-    char p_caracter_entre_espacios{};
+    char p_caracter_entre_espacios{};                       // 
 
     if (temp.empty())
         return false;
@@ -163,7 +179,7 @@ bool comprobacion(string temp){
     
     for (int i = 0 ; i <= temp.size()-1 ; i++)                      //Revision letra por letra de los strings a partuir del indice 1
     {                                                               //La verificacion esta planificada por caracteres (Que pasa si temp.at(i) == 'x' por ejemplo)                
-        if (temp[i] == ' ')
+        if (temp[i] == ' ')                                         
         {
                 if (i >= 1)
                     p_caracter_entre_espacios = temp.at(i-1);
@@ -175,7 +191,7 @@ bool comprobacion(string temp){
                     return false;
                 else 
                 {
-                    while (i <= temp.size()-2 and temp.at(i+1) == ' ')
+                    while (i <= temp.size()-2 and temp.at(i+1) == ' ')              
                         i++;
                     if (i <= temp.size()-2)
                     {
