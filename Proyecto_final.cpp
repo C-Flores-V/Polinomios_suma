@@ -15,7 +15,7 @@ bool comprobacion(string);
 //////////////////////////////
 
 int main () {
-    vector<string> str_polinomios;
+    vector<string> str_polinomios;                                      //Los strings ingresados por el usuario se guardan en un vector de 
     vector<tPolinomio> tpol_polinomios;
     int n_polinomios;
     string temp;
@@ -146,7 +146,6 @@ void leer_str_pol(vector<string>& str_polinomios, int n_polinomios){
 }
 bool comprobacion(string temp){
     string lugar_monomio = {"entero"};                      // Variable que guarda la ubicacion en la que se encuentra i dentro de la string, puede ser entero, decimal o grado
-    bool primer_espacio = true;
     char p_caracter_entre_espacios{};
 
     if (temp.empty())
@@ -162,49 +161,51 @@ bool comprobacion(string temp){
         return false;
     }
     
-    for (int i = 1 ; i <= temp.size()-1 ; i++)                      //Revision letra por letra de los strings a partuir del indice 1
+    for (int i = 0 ; i <= temp.size()-1 ; i++)                      //Revision letra por letra de los strings a partuir del indice 1
     {                                                               //La verificacion esta planificada por caracteres (Que pasa si temp.at(i) == 'x' por ejemplo)                
         if (temp[i] == ' ')
         {
-            if(i == 1)                                   //Aqui se revisan los casos que existen cuando el caracter es un espacio y esta en la segunda posicion
-            {
-                while (i <= temp.size()-1 and temp.at(i) == ' ')
-                    i++;
-                if (i == temp.size())
-                    return false;
-                if (!(temp.at(i) <= 57 and temp.at(i) >= 48))
-                    return false;
-            }
-            else
-            {
-                if (primer_espacio == true)
+                if (i >= 1)
                     p_caracter_entre_espacios = temp.at(i-1);
-                    primer_espacio = false;
+                else
+                    p_caracter_entre_espacios = temp.at(i);
                 if (i <= temp.size()-2 and !(temp.at(i+1) == '+' or temp.at(i+1) == '-' or (temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' '))
                     return false;
-                else if (!(temp.at(i-1) == '+' or temp.at(i-1) == '-' or (temp.at(i-1) <= 57 and temp.at(i-1) >= 48) or temp.at(i-1) == ' '))
+                else if (i >= 1 and !(temp.at(i-1) == '+' or temp.at(i-1) == '-' or (temp.at(i-1) <= 57 and temp.at(i-1) >= 48) or temp.at(i-1) == ' '))
                     return false;
-                else
+                else 
                 {
-                    while (i <= temp.size()-2 and (i <= temp.size()-1 and temp.at(i+1) == ' '))
+                    while (i <= temp.size()-2 and temp.at(i+1) == ' ')
                         i++;
-                    if (i <= temp.size()-2 and ((p_caracter_entre_espacios == '+' and temp.at(i+1) == '+') 
-                        or (p_caracter_entre_espacios == '-' and temp.at(i+1) == '-') 
-                        or (p_caracter_entre_espacios == '+' and temp.at(i+1) == '-') 
-                        or (p_caracter_entre_espacios == '-' and temp.at(i+1) == '+') 
-                        or ((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) and (p_caracter_entre_espacios <= 57 and p_caracter_entre_espacios >= 48))))
-                        return false;
-                }
-                primer_espacio = true;
-            }    
+                    if (i <= temp.size()-2)
+                    {
+                        if (i <= temp.size()-2 and !((p_caracter_entre_espacios == '+' and (temp.at(i+1) <= 57 and temp.at(i+1) >= 48)) 
+                            or (p_caracter_entre_espacios == '-' and (temp.at(i+1) <= 57 and temp.at(i+1) >= 48)) 
+                            or ((p_caracter_entre_espacios <= 57 and p_caracter_entre_espacios >= 48) and temp.at(i+1) == '+') 
+                            or ((p_caracter_entre_espacios <= 57 and p_caracter_entre_espacios >= 48) and temp.at(i+1) == '-')
+                            or (p_caracter_entre_espacios == ' ' and (temp.at(i+1) <= 57 and temp.at(i+1) >= 48))
+                            or (p_caracter_entre_espacios == ' ' and temp.at(i+1) == '+')
+                            or (p_caracter_entre_espacios == ' ' and temp.at(i+1) == '-')))
+                            return false;
+                    }
+                    else
+                    {
+                        if (i <= temp.size()-1 and !((p_caracter_entre_espacios == '+' and (temp.at(i) <= 57 and temp.at(i) >= 48)) 
+                            or (p_caracter_entre_espacios == '-' and (temp.at(i) <= 57 and temp.at(i) >= 48)) 
+                            or ((p_caracter_entre_espacios <= 57 and p_caracter_entre_espacios >= 48) and temp.at(i) == '+') 
+                            or ((p_caracter_entre_espacios <= 57 and p_caracter_entre_espacios >= 48) and temp.at(i) == '-')
+                            or (p_caracter_entre_espacios <= 57 and p_caracter_entre_espacios >= 48) and temp.at(i) == ' '))
+                            return false;
+                    }
+                } 
         }
         else if (temp.at(i) <= 57 and temp.at(i) >= 48)
         {
-            if ((i < (temp.size()-1)) and lugar_monomio == "entero" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == '.' or temp.at(i+1) == '*' or temp.at(i+1) == ' '))
+            if ((i < (temp.size()-1)) and lugar_monomio == "entero" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == '.' or temp.at(i+1) == '*' or temp.at(i+1) == ' ' or temp.at(i+1) == '+' or temp.at(i+1) == '-'))
                 return false;
-            else if ((i < (temp.size()-1)) and lugar_monomio == "decimal" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == '*' or temp.at(i+1) == ' '))
+            else if ((i < (temp.size()-1)) and lugar_monomio == "decimal" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == '*' or temp.at(i+1) == ' ' or temp.at(i+1) == '+' or temp.at(i+1) == '-'))
                 return false;
-            else if ((i < (temp.size()-1)) and lugar_monomio == "grado" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' ' or temp.at(i+1) == '+' or temp.at(i+1) == '-' or temp.at(i+1) == ' '))
+            else if ((i < (temp.size()-1)) and lugar_monomio == "grado" and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' ' or temp.at(i+1) == '+' or temp.at(i+1) == '-'))
                 return false;
             else
                 continue;
@@ -213,7 +214,9 @@ bool comprobacion(string temp){
         else if (temp.at(i) == '.')
         {
             lugar_monomio = "decimal";
-            if (!(temp.at(i+1) <= 57 and temp.at(i+1) >= 48))
+            if (i < (temp.size()-1) and !(temp.at(i+1) <= 57 and temp.at(i+1) >= 48))
+                return false;
+            else if (i==temp.size()-1)
                 return false;
             else
                 continue;
@@ -222,31 +225,32 @@ bool comprobacion(string temp){
         else if (temp.at(i) == '*')
         {
             lugar_monomio = "grado";
-            if (temp.at(i+1) != 'x')
+            if (i < (temp.size()-1) and temp.at(i+1) != 'x')
+                return false;
+            else if (i==temp.size()-1)
                 return false;
             else
                 continue;
         }
         else if (temp.at(i) == 'x')
         {
-            if (!(temp.at(i+1) <= 57 and temp.at(i+1) >= 48))
+            if (i < (temp.size()-1) and !(temp.at(i+1) <= 57 and temp.at(i+1) >= 48))
+                return false;
+            else if (i==temp.size()-1)
                 return false;
             else
                 continue;
         }
         else if (temp.at(i) == '+' or temp.at(i) == '-' )
         {
-            if (!((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' '))
+            if (i < (temp.size()-1) and !((temp.at(i+1) <= 57 and temp.at(i+1) >= 48) or temp.at(i+1) == ' '))
+                return false;
+            else if (i==temp.size()-1)
                 return false;
             else
                 lugar_monomio = "entero";
                 continue;
-        }
-        
-        
-            //Siguiente comprobacion: Si "x", "*", ".", el siguiente caracter no puede ser un espacio,
-            //Si "char numero", y el siguiente caracter es un espacio, se debe recorrer mediante un bucle un temp.at() todos los espacios hasta encontrar un "+", caso contrario se retorna falso
-            //Si "+" o "-", y el siguiente caracater es un espacio, se se debe recorrer mediante un bucle un temp.at() todos los espacios  hasta encontrar un numero, caso contrario se retorna falso
+        }        
     }
     return true;
 }
