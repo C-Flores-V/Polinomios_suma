@@ -29,15 +29,22 @@ int main () {
         comp = true;
         getline(cin , temp_n_poliniomios);
         
-        for (int i = 0; i < temp_n_poliniomios.size() ; i++)
+        if (temp_n_poliniomios == "")
         {
-            if (!(temp_n_poliniomios.at(i) >=49 and temp_n_poliniomios.at(i) <= 57))
-            {
-                cout<<"Error, ingrese nuevamente el numero de polinomios: ";
-                comp = false;
-                break;
-            }
+            cout<<"Error, ingrese nuevamente el numero de polinomios: ";
+            comp = false;
+            continue;
         }
+        else
+            for (int i = 0; i < temp_n_poliniomios.size() ; i++)
+            {
+                if (!(temp_n_poliniomios.at(i) >=48 and temp_n_poliniomios.at(i) <= 57) or temp_n_poliniomios == "0")
+                {
+                    cout<<"Error, ingrese nuevamente el numero de polinomios: ";
+                    comp = false;
+                    break;
+                }
+            }
     }                                                                   //Recibe el numero de polinomios
     n_polinomios = stoi(temp_n_poliniomios);
     leer_str_pol(str_polinomios, n_polinomios);                         //Se debe usar cin.ignore() antes de leer_str_pol() si se utiliza cin
@@ -58,18 +65,64 @@ int main () {
         tpol_polinomios.push_back(str_to_tpol(polinomio));              //Se hace push dentro del vector tpol_polinomios la funcion
     }
 
-
-    int i = 0;                                                          //TEMPORAL, imprime los datos contenidos dentro de el vector tpol_polinomios
-    for(tPolinomio polinomio : tpol_polinomios)                          
-    {
-        cout<<"------------------"<<endl;                                
-        cout<<"Grado del polinomio: "<<polinomio.grado<<endl;
-        for (float coeficiente: polinomio.coef){
-            cout<<"Coeficiente elevado a la "<<i<<": " <<coeficiente<<endl;
-            i++;
+        //Parte para sumar polinomios
+    unsigned int grado_mayor = 0;
+    for (const auto& estructura_polinomio : tpol_polinomios) {
+        if (estructura_polinomio.grado > grado_mayor) {
+            grado_mayor = estructura_polinomio.grado;
         }
-        cout<<"------------------"<<endl;
     }
+    
+    for (auto& estructura_polinomio : tpol_polinomios) {
+        estructura_polinomio.coef.resize(grado_mayor+1);
+    }
+    
+    vector<double> suma_polinomio_total;
+    
+    for (int i = 0; i <= grado_mayor; i++) {
+        int resultado = 0;
+        
+        for (int j = 0; j < tpol_polinomios.size(); j++) {
+            resultado += tpol_polinomios.at(j).coef.at(i);
+        }
+        
+        suma_polinomio_total.push_back(resultado);
+    }
+    
+    // Elimina posiciones finales de vector que contengan coeficiente = 0
+    for (unsigned long k = suma_polinomio_total.size()-1; k >= 0; k--) {
+        if (suma_polinomio_total.at(k) == 0) {
+            suma_polinomio_total.erase(suma_polinomio_total.begin() + k);
+        } else {
+            break;
+        }
+    }
+        
+    cout << endl << "----SUMA TOTAL----" << endl;
+    cout << "El polinomio suma es de grado: " << suma_polinomio_total.size() -1 << endl;
+    int grado = 0;
+    for (const auto& coeficiente : suma_polinomio_total) {
+    	if(grado == 0){
+    		cout << coeficiente;
+        	grado++;	
+		}
+		else{
+			if(coeficiente > 0){
+				cout << " + " << coeficiente << "*x" << grado;
+        		grado++;
+			}
+			else if (coeficiente < 0){
+				cout << " " << coeficiente << "*x" << grado;
+        		grado++;
+			}
+			else
+				grado++;
+                continue;	
+		}
+    }
+    
+    return 0;
+
 
 
     //Lo que queda pendiente por hacer es 
